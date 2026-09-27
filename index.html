@@ -5,21 +5,94 @@
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <title>Mi sitio</title>
     <style>
-      html,body { height:100%; margin:0; background:#ffffff; color:#000000; }
+      :root {
+        --bg: #000000;
+        --gold: #d4af37;
+        --gold-soft: #f3d678;
+        --gold-deep: #a67c00;
+      }
+
+      * { box-sizing: border-box; }
+
+      html, body {
+        margin: 0;
+        width: 100%;
+        height: 100%;
+        background: var(--bg);
+        color: var(--gold);
+        overflow: hidden;
+        font-family: "Georgia", "Times New Roman", serif;
+      }
+
       body {
-        font-family: "Times New Roman", Times, serif;
-        font-size: 18px;
+        position: relative;
         display: flex;
         align-items: center;
         justify-content: flex-start;
-        padding-left: 8%;
-        box-sizing: border-box;
+        padding: 6vh 7vw;
       }
-      .content { max-width: 900px; }
-      p { margin: 0 0 1rem 0; line-height: 1.6; text-align: left; }
+
+      body::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        background: radial-gradient(circle at center, rgba(212,175,55,0.12), transparent 55%);
+        pointer-events: none;
+      }
+
+      .content {
+        position: relative;
+        z-index: 2;
+        max-width: 920px;
+        text-shadow: 0 0 10px rgba(212,175,55,0.35);
+      }
+
+      p {
+        margin: 0 0 1.2rem 0;
+        line-height: 1.7;
+        font-size: clamp(1.1rem, 1.6vw, 1.8rem);
+        letter-spacing: 0.03em;
+        color: var(--gold-soft);
+      }
+
+      .symbol-field {
+        position: fixed;
+        inset: 0;
+        z-index: 1;
+        pointer-events: none;
+      }
+
+      .float-symbol {
+        position: absolute;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--gold);
+        font-size: clamp(1.5rem, 2vw, 3rem);
+        text-shadow: 0 0 12px rgba(212,175,55,0.8), 0 0 22px rgba(212,175,55,0.6);
+        opacity: 0;
+        animation: fadeInOut 7s ease-in-out infinite;
+        will-change: transform, opacity;
+      }
+
+      .mercury { color: var(--gold-soft); }
+      .sulfur { color: var(--gold); }
+      .man { color: #d5b35d; }
+
+      @keyframes fadeInOut {
+        0% { opacity: 0; }
+        70% { opacity: 1; }
+        100% { opacity: 0; }
+      }
     </style>
   </head>
   <body>
+    <div class="symbol-field" aria-hidden="true">
+      <div class="float-symbol mercury">☿</div>
+      <div class="float-symbol sulfur">☼</div>
+      <div class="float-symbol man">♂</div>
+    </div>
+
     <div class="content">
       <p>Escuchen a los dioses, tan confiados en su propia superioridad que abandonan toda forma de realidad.</p>
       <p>Existen lejos de nuestro alcance, ignorantes de la muerte y el hambre y el odio.</p>
@@ -31,5 +104,46 @@
       <p>Nuestra civilización se desarrolla según los caminos que ella desea.</p>
       <p>No puedo permitir eso. No lo haré. La mano invisible va a propsperar porque nosotros somos la humanidad. Todo lo demás está por debajo del pueblo elegido.</p>
     </div>
+
+    <script>
+      const symbols = [...document.querySelectorAll('.float-symbol')];
+
+      symbols.forEach((symbol, index) => {
+        const rect = symbol.getBoundingClientRect();
+        const width = rect.width || 40;
+        const height = rect.height || 40;
+
+        let x = Math.random() * (window.innerWidth - width);
+        let y = Math.random() * (window.innerHeight - height);
+        let vx = (Math.random() * 1.2 + 0.7) * (Math.random() > 0.5 ? 1 : -1);
+        let vy = (Math.random() * 1.2 + 0.7) * (Math.random() > 0.5 ? 1 : -1);
+
+        symbol.style.left = x + 'px';
+        symbol.style.top = y + 'px';
+        symbol.style.animationDelay = (index * 0.6) + 's';
+
+        const drift = () => {
+          x += vx;
+          y += vy;
+
+          if (x <= 0 || x >= window.innerWidth - width) {
+            vx *= -1;
+            x = Math.max(0, Math.min(x, window.innerWidth - width));
+          }
+
+          if (y <= 0 || y >= window.innerHeight - height) {
+            vy *= -1;
+            y = Math.max(0, Math.min(y, window.innerHeight - height));
+          }
+
+          symbol.style.left = x + 'px';
+          symbol.style.top = y + 'px';
+
+          requestAnimationFrame(drift);
+        };
+
+        requestAnimationFrame(drift);
+      });
+    </script>
   </body>
 </html>
