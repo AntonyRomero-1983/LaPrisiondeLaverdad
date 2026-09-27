@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>Mi sitio</title>
+    <title>La Prisión de la Verdad</title>
     <style>
       :root {
         --bg: #000000;
@@ -50,7 +50,7 @@
       p {
         margin: 0 0 1.2rem 0;
         line-height: 1.7;
-        font-size: clamp(1.1rem, 1.6vw, 1.8rem);
+        font-size: 16px;
         letter-spacing: 0.03em;
         color: var(--gold-soft);
       }
@@ -68,7 +68,7 @@
         align-items: center;
         justify-content: center;
         color: var(--gold);
-        font-size: clamp(1.5rem, 2vw, 3rem);
+        font-size: clamp(1.2rem, 2vw, 2.5rem);
         text-shadow: 0 0 12px rgba(212,175,55,0.8), 0 0 22px rgba(212,175,55,0.6);
         opacity: 0;
         animation: fadeInOut 7s ease-in-out infinite;
@@ -84,13 +84,90 @@
         70% { opacity: 1; }
         100% { opacity: 0; }
       }
+
+      .ominous-text-container {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 3;
+        pointer-events: none;
+      }
+
+      .ominous-text {
+        font-size: clamp(1.8rem, 4vw, 3.5rem);
+        color: var(--gold);
+        text-shadow: 
+          0 0 20px rgba(212,175,55,0.9),
+          0 0 40px rgba(212,175,55,0.7),
+          0 0 60px rgba(212,175,55,0.5);
+        font-weight: bold;
+        letter-spacing: 0.15em;
+        white-space: nowrap;
+        opacity: 0;
+        animation: ominousFadeInOutVisible 37s ease-in-out 1;
+      }
+
+      @keyframes ominousFadeInOutVisible {
+        0% { opacity: 0; }
+        56.75% { opacity: 0; }
+        57% { opacity: 1; }
+        81% { opacity: 1; }
+        100% { opacity: 0; }
+      }
+
+      @media (max-width: 768px) {
+        body {
+          padding: 4vh 5vw;
+          justify-content: center;
+        }
+
+        .content {
+          max-width: 95vw;
+        }
+
+        p {
+          font-size: 14px;
+          line-height: 1.6;
+          margin-bottom: 0.8rem;
+        }
+
+        .float-symbol {
+          font-size: clamp(1rem, 2.5vw, 2rem);
+        }
+
+        .ominous-text {
+          font-size: clamp(1.2rem, 3vw, 2.5rem);
+        }
+      }
+
+      @media (max-width: 480px) {
+        body {
+          padding: 3vh 4vw;
+        }
+
+        p {
+          font-size: 13px;
+          line-height: 1.5;
+          margin-bottom: 0.6rem;
+        }
+
+        .float-symbol {
+          font-size: clamp(0.9rem, 2vw, 1.5rem);
+        }
+
+        .ominous-text {
+          font-size: clamp(1rem, 2.5vw, 1.8rem);
+          letter-spacing: 0.1em;
+        }
+      }
     </style>
   </head>
   <body>
-    <div class="symbol-field" aria-hidden="true">
-      <div class="float-symbol mercury">☿</div>
-      <div class="float-symbol sulfur">☼</div>
-      <div class="float-symbol man">♂</div>
+    <div class="symbol-field" aria-hidden="true"></div>
+
+    <div class="ominous-text-container">
+      <div class="ominous-text">Soy tu dueño</div>
     </div>
 
     <div class="content">
@@ -106,43 +183,58 @@
     </div>
 
     <script>
-      const symbols = [...document.querySelectorAll('.float-symbol')];
+      const symbolField = document.querySelector('.symbol-field');
+      const symbolTypes = [
+        { symbol: '☿', class: 'mercury' },
+        { symbol: '☼', class: 'sulfur' },
+        { symbol: '♂', class: 'man' }
+      ];
 
-      symbols.forEach((symbol, index) => {
-        const rect = symbol.getBoundingClientRect();
-        const width = rect.width || 40;
-        const height = rect.height || 40;
+      const symbolCount = 21;
+      const allSymbols = [];
 
-        let x = Math.random() * (window.innerWidth - width);
-        let y = Math.random() * (window.innerHeight - height);
-        let vx = (Math.random() * 1.2 + 0.7) * (Math.random() > 0.5 ? 1 : -1);
-        let vy = (Math.random() * 1.2 + 0.7) * (Math.random() > 0.5 ? 1 : -1);
+      symbolTypes.forEach(({ symbol, className }) => {
+        for (let i = 0; i < symbolCount; i++) {
+          const symbolEl = document.createElement('div');
+          symbolEl.classList.add('float-symbol', className);
+          symbolEl.textContent = symbol;
+          symbolEl.style.animationDelay = (Math.random() * 7) + 's';
+          symbolField.appendChild(symbolEl);
 
-        symbol.style.left = x + 'px';
-        symbol.style.top = y + 'px';
-        symbol.style.animationDelay = (index * 0.6) + 's';
+          const width = 40;
+          const height = 40;
 
-        const drift = () => {
-          x += vx;
-          y += vy;
+          let x = Math.random() * (window.innerWidth - width);
+          let y = Math.random() * (window.innerHeight - height);
+          let vx = (Math.random() * 1.2 + 0.7) * (Math.random() > 0.5 ? 1 : -1);
+          let vy = (Math.random() * 1.2 + 0.7) * (Math.random() > 0.5 ? 1 : -1);
 
-          if (x <= 0 || x >= window.innerWidth - width) {
-            vx *= -1;
-            x = Math.max(0, Math.min(x, window.innerWidth - width));
-          }
+          symbolEl.style.left = x + 'px';
+          symbolEl.style.top = y + 'px';
 
-          if (y <= 0 || y >= window.innerHeight - height) {
-            vy *= -1;
-            y = Math.max(0, Math.min(y, window.innerHeight - height));
-          }
+          const drift = () => {
+            x += vx;
+            y += vy;
 
-          symbol.style.left = x + 'px';
-          symbol.style.top = y + 'px';
+            if (x <= 0 || x >= window.innerWidth - width) {
+              vx *= -1;
+              x = Math.max(0, Math.min(x, window.innerWidth - width));
+            }
+
+            if (y <= 0 || y >= window.innerHeight - height) {
+              vy *= -1;
+              y = Math.max(0, Math.min(y, window.innerHeight - height));
+            }
+
+            symbolEl.style.left = x + 'px';
+            symbolEl.style.top = y + 'px';
+
+            requestAnimationFrame(drift);
+          };
 
           requestAnimationFrame(drift);
-        };
-
-        requestAnimationFrame(drift);
+          allSymbols.push(symbolEl);
+        }
       });
     </script>
   </body>
